@@ -35,6 +35,10 @@ app.use('/api/coupon', couponRoutes);
 app.use('/api/lead', leadRoutes);
 app.use('/api/admin', adminRoutes);
 
+app.get('/', (req, res) => {
+    res.status(200).json({ message: 'Coupon System API is running...' });
+});
+
 app.use((err, req, res, next) => {
     console.error(err.stack);
     res.status(500).json({ error: 'Something went wrong!' });
