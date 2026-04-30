@@ -49,66 +49,53 @@ export default function LeadModal({ leadId, onClose }) {
                     </div>
                 ) : lead ? (
                     <div>
-                    <div className="premium-details-grid">
-                        <div className="premium-details-section">
-                            <Detail icon={<User size={18} />} label="Full Name" value={lead.name} />
-                            <Detail icon={<Phone size={18} />} label="Phone Number" value={lead.phone} />
-                            <Detail icon={<Mail size={18} />} label="Email Address" value={lead.email} />
-                        </div>
-                        
-                        <div className="premium-details-section">
-                            <Detail icon={<MapPin size={18} />} label="Location" value={lead.city} />
-                            <Detail icon={<Briefcase size={18} />} label="Service Requirement" value={lead.requirementType} />
-                            <Detail icon={<IndianRupee size={18} />} label="Estimated Budget" value={`₹${lead.budget.toLocaleString('en-IN')}`} />
-                        </div>
-
-                        {lead.message && (
-                            <div className="premium-details-section wide">
-                                <Detail icon={<MessageSquare size={18} />} label="Additional Message" value={lead.message} />
+                        <div className="premium-details-grid">
+                            <div className="premium-details-section">
+                                <Detail icon={<User size={18} />} label="Full Name" value={lead.name} />
+                                <Detail icon={<Phone size={18} />} label="Phone Number" value={lead.phone} />
+                                <Detail icon={<Mail size={18} />} label="Email Address" value={lead.email} />
                             </div>
-                        )}
-                    </div>
 
-                        {/* Pricing Summary */}
-                        <div style={{
-                            marginTop: '1.25rem',
-                            background: 'var(--bg)',
-                            borderRadius: 'var(--radius-md)',
-                            padding: '1rem',
-                            display: 'flex',
-                            flexDirection: 'column',
-                            gap: '0.5rem'
-                        }}>
-                            <div style={{ display:'flex', justifyContent:'space-between', fontSize:'0.88rem', color:'var(--text-secondary)' }}>
+                            <div className="premium-details-section">
+                                <Detail icon={<MapPin size={18} />} label="Location" value={lead.city} />
+                                <Detail icon={<Briefcase size={18} />} label="Requirement" value={lead.requirementType} />
+                                <Detail icon={<IndianRupee size={18} />} label="Budget" value={`₹${lead.budget.toLocaleString('en-IN')}`} />
+                            </div>
+
+                            {lead.message && (
+                                <div className="premium-details-section wide">
+                                    <Detail icon={<MessageSquare size={18} />} label="Message" value={lead.message} />
+                                </div>
+                            )}
+                        </div>
+
+                        <div className="lead-pricing-wrap">
+                            <div className="lead-pricing-row">
                                 <span>Subtotal</span>
                                 <span>₹{lead.budget.toLocaleString('en-IN')}</span>
                             </div>
                             {lead.discountAmount > 0 && (
                                 <>
-                                    <div style={{ display:'flex', justifyContent:'space-between', fontSize:'0.88rem' }}>
-                                        <span style={{ display:'flex', alignItems:'center', gap:'4px', color:'var(--text-secondary)' }}>
+                                    <div className="lead-pricing-row">
+                                        <span className="lead-pricing-coupon-label">
                                             <Tag size={13} /> {lead.couponApplied?.code}
                                         </span>
-                                        <span style={{ color:'var(--accent-green)', fontWeight:600 }}>− ₹{lead.discountAmount.toLocaleString('en-IN')}</span>
+                                        <span className="lead-pricing-discount">− ₹{lead.discountAmount.toLocaleString('en-IN')}</span>
                                     </div>
-                                    <div style={{ display:'flex', justifyContent:'space-between', fontSize:'0.82rem', color:'var(--text-muted)' }}>
+                                    <div className="lead-pricing-row lead-pricing-saved">
                                         <span>You saved</span>
-                                        <span style={{ color:'var(--accent-green)' }}>₹{lead.discountAmount.toLocaleString('en-IN')}</span>
+                                        <span>₹{lead.discountAmount.toLocaleString('en-IN')}</span>
                                     </div>
                                 </>
                             )}
-                            <div style={{
-                                display:'flex', justifyContent:'space-between',
-                                fontSize:'1rem', fontWeight:700, color:'var(--text-primary)',
-                                borderTop:'1px solid var(--border)', paddingTop:'0.5rem', marginTop:'0.25rem'
-                            }}>
+                            <div className="lead-pricing-total">
                                 <span>Final Price</span>
-                                <span style={{ color:'var(--primary)' }}>₹{lead.finalPrice.toLocaleString('en-IN')}</span>
+                                <span>₹{lead.finalPrice.toLocaleString('en-IN')}</span>
                             </div>
                         </div>
 
-                        <div style={{ marginTop:'0.75rem', textAlign:'right', fontSize:'0.75rem', color:'var(--text-muted)' }}>
-                            Submitted: {new Date(lead.createdAt).toLocaleString('en-IN')}
+                        <div className="lead-submitted-at">
+                            Submitted {new Date(lead.createdAt).toLocaleString('en-IN')}
                         </div>
                     </div>
                 ) : (

@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
 const { protect } = require('../middlewares/auth');
-const { getStats } = require('../controllers/adminController');
+const { getStats, getLeadsChart } = require('../controllers/adminController');
 
 router.post('/login', (req, res) => {
     const { password } = req.body;
@@ -16,5 +16,6 @@ router.post('/login', (req, res) => {
 });
 
 router.get('/stats', protect, getStats);
+router.get('/leads-chart', protect, getLeadsChart);
 
 module.exports = router;

@@ -44,9 +44,10 @@ app.use((err, req, res, next) => {
     res.status(500).json({ error: 'Something went wrong!' });
 });
 
-const PORT = process.env.PORT || 8080;
+const PORT = process.env.PORT || 8081;
 app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+    console.log(`🚀 Coupon System API running on http://localhost:${PORT}`);
+    console.log(`📊 Analytics endpoints active at /api/admin/stats`);
 });
 
 module.exports = app;

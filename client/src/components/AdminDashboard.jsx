@@ -50,7 +50,7 @@ function DeleteConfirmModal({ lead, onConfirm, onCancel, loading }) {
     );
 }
 
-export default function AdminDashboard({ coupons, onUnauthorized }) {
+export default function AdminDashboard({ coupons, onUnauthorized, externalSearch }) {
     const [leads, setLeads] = useState([]);
     const [total, setTotal] = useState(0);
     const [totalPages, setTotalPages] = useState(1);
@@ -68,7 +68,7 @@ export default function AdminDashboard({ coupons, onUnauthorized }) {
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('');
 
-    const debouncedSearch = useDebounce(search, 400);
+    const debouncedSearch = useDebounce(externalSearch !== undefined ? externalSearch : search, 400);
     const abortRef = useRef(null);
 
     const fetchLeads = useCallback(async (p = 1) => {
@@ -140,16 +140,18 @@ export default function AdminDashboard({ coupons, onUnauthorized }) {
         <div>
             {/* Filters bar */}
             <div className="filters-bar">
-                <div className="search-wrap">
-                    <Search size={16} className="search-icon" />
-                    <input
-                        className="search-input"
-                        placeholder="Search name, email or phone…"
-                        value={search}
-                        onChange={e => setSearch(e.target.value)}
-                    />
-                    {search && <button className="clear-search" onClick={() => setSearch('')}><X size={14} /></button>}
-                </div>
+                {!externalSearch && externalSearch !== '' && (
+                    <div className="search-wrap">
+                        <Search size={16} className="search-icon" />
+                        <input
+                            className="search-input"
+                            placeholder="Search name, email or phone…"
+                            value={search}
+                            onChange={e => setSearch(e.target.value)}
+                        />
+                        {search && <button className="clear-search" onClick={() => setSearch('')}><X size={14} /></button>}
+                    </div>
+                )}
 
                 <div className="filter-selects">
                     <select className="filter-select" value={couponFilter} onChange={e => setCouponFilter(e.target.value)}>

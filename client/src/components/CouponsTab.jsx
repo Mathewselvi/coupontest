@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
-import { Loader2, Plus, Pencil, Trash2, AlertCircle, Tag, Percent, DollarSign, Clock, RefreshCw } from 'lucide-react';
+import { Loader2, Plus, Pencil, Trash2, AlertCircle, Tag, Clock, RefreshCw, TriangleAlert } from 'lucide-react';
 import CouponModal from './CouponModal';
 import { useToast } from '../context/ToastContext';
 
@@ -13,6 +13,38 @@ function StatusBadge({ coupon }) {
     if (expired) return <span className="cpn-badge cpn-expired">Expired</span>;
     if (exhausted) return <span className="cpn-badge cpn-exhausted">Exhausted</span>;
     return <span className="cpn-badge cpn-active">Active</span>;
+}
+
+function DeleteConfirmModal({ coupon, onConfirm, onCancel, loading }) {
+    useEffect(() => {
+        const onKey = (e) => e.key === 'Escape' && onCancel();
+        window.addEventListener('keydown', onKey);
+        return () => window.removeEventListener('keydown', onKey);
+    }, [onCancel]);
+
+    return (
+        <div className="modal-overlay" onClick={onCancel}>
+            <div className="del-confirm-box" onClick={e => e.stopPropagation()}>
+                <div className="del-confirm-icon">
+                    <TriangleAlert size={22} />
+                </div>
+                <h3 className="del-confirm-title">Delete Coupon</h3>
+                <p className="del-confirm-msg">
+                    You're about to permanently delete the coupon <strong>{coupon.code}</strong>.
+                    This action cannot be undone.
+                </p>
+                <div className="del-confirm-actions">
+                    <button className="del-btn-cancel" onClick={onCancel} disabled={loading}>
+                        Cancel
+                    </button>
+                    <button className="del-btn-confirm" onClick={onConfirm} disabled={loading}>
+                        {loading ? <Loader2 size={14} className="spinner" /> : <Trash2 size={14} />}
+                        {loading ? 'Deleting…' : 'Delete'}
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
 }
 
 function UsageBar({ current, max }) {
@@ -32,21 +64,19 @@ function UsageBar({ current, max }) {
 
 function CouponCard({ coupon, onEdit, onDelete, deleting }) {
     const expired = new Date() > new Date(coupon.expiryDate);
+    const exhausted = coupon.currentUses >= coupon.maxUses;
+    const inactive = !coupon.isActive || expired || exhausted;
     const isPercentage = coupon.discountType === 'percentage';
 
+    const borderColor = inactive ? '#d1d5db'
+        : expired ? '#fca5a5'
+        : '#a5b4fc';
+
     return (
-        <div className={`cpn-card ${expired || !coupon.isActive ? 'cpn-card-dim' : ''}`}>
+        <div className={`cpn-card ${inactive ? 'cpn-card-dim' : ''}`}>
+
             <div className="cpn-card-body">
-                {/* Header row */}
                 <div className="cpn-card-header">
-                    <div className="cpn-card-icon" style={{
-                        background: expired ? '#f3f4f6' : isPercentage ? '#f3ebff' : '#e8faf2'
-                    }}>
-                        {isPercentage
-                            ? <Percent size={16} style={{ color: expired ? '#9ca3af' : '#7B2FBE' }} />
-                            : <DollarSign size={16} style={{ color: expired ? '#9ca3af' : '#10b981' }} />
-                        }
-                    </div>
                     <div style={{ flex: 1 }}>
                         <div className="cpn-card-code">{coupon.code}</div>
                         <div className="cpn-card-sub">
@@ -57,7 +87,6 @@ function CouponCard({ coupon, onEdit, onDelete, deleting }) {
                     <StatusBadge coupon={coupon} />
                 </div>
 
-                {/* Meta row */}
                 <div className="cpn-meta-grid">
                     <div className="cpn-meta-item">
                         <Clock size={12} />
@@ -69,10 +98,8 @@ function CouponCard({ coupon, onEdit, onDelete, deleting }) {
                     </div>
                 </div>
 
-                {/* Usage bar */}
                 <UsageBar current={coupon.currentUses} max={coupon.maxUses} />
 
-                {/* Action buttons */}
                 <div className="cpn-card-actions">
                     <button className="cpn-btn cpn-btn-edit" onClick={() => onEdit(coupon)}>
                         <Pencil size={13} /> Edit
@@ -98,7 +125,8 @@ export default function CouponsTab({ onUnauthorized }) {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
     const [modal, setModal] = useState(null);
-    const [deleting, setDeleting] = useState(null);
+    const [confirmDelete, setConfirmDelete] = useState(null);
+    const [deleting, setDeleting] = useState(false);
     const showToast = useToast();
 
     const fetchCoupons = useCallback(async () => {
@@ -117,17 +145,18 @@ export default function CouponsTab({ onUnauthorized }) {
 
     useEffect(() => { fetchCoupons(); }, [fetchCoupons]);
 
-    const handleDelete = async (coupon) => {
-        if (!window.confirm(`Delete coupon "${coupon.code}"? This cannot be undone.`)) return;
-        setDeleting(coupon._id);
+    const handleDeleteConfirm = async () => {
+        if (!confirmDelete) return;
+        setDeleting(true);
         try {
-            await axios.delete(`/api/coupon/${coupon._id}`, { headers: authHeaders() });
-            showToast(`Coupon ${coupon.code} deleted`);
+            await axios.delete(`/api/coupon/${confirmDelete._id}`, { headers: authHeaders() });
+            showToast(`Coupon ${confirmDelete.code} deleted`);
+            setConfirmDelete(null);
             fetchCoupons();
         } catch (err) {
             showToast(err.response?.data?.error || 'Failed to delete coupon', 'error');
         } finally {
-            setDeleting(null);
+            setDeleting(false);
         }
     };
 
@@ -184,8 +213,8 @@ export default function CouponsTab({ onUnauthorized }) {
                                         key={c._id}
                                         coupon={c}
                                         onEdit={setModal}
-                                        onDelete={handleDelete}
-                                        deleting={deleting}
+                                        onDelete={setConfirmDelete}
+                                        deleting={deleting ? confirmDelete?._id : null}
                                     />
                                 ))}
                             </div>
@@ -200,8 +229,8 @@ export default function CouponsTab({ onUnauthorized }) {
                                         key={c._id}
                                         coupon={c}
                                         onEdit={setModal}
-                                        onDelete={handleDelete}
-                                        deleting={deleting}
+                                        onDelete={setConfirmDelete}
+                                        deleting={deleting ? confirmDelete?._id : null}
                                     />
                                 ))}
                             </div>
@@ -215,6 +244,15 @@ export default function CouponsTab({ onUnauthorized }) {
                     coupon={modal === 'create' ? null : modal}
                     onClose={() => setModal(null)}
                     onSaved={() => { setModal(null); fetchCoupons(); }}
+                />
+            )}
+
+            {confirmDelete && (
+                <DeleteConfirmModal
+                    coupon={confirmDelete}
+                    onConfirm={handleDeleteConfirm}
+                    onCancel={() => setConfirmDelete(null)}
+                    loading={deleting}
                 />
             )}
         </div>

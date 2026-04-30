@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Loader2, CheckCircle, AlertCircle, Tag, ChevronDown, ChevronUp, Sparkles } from 'lucide-react';
+import { Loader2, CheckCircle, AlertCircle, Tag, ChevronDown, ChevronUp, Sparkles, ArrowRight } from 'lucide-react';
 
 const API_BASE = '/api';
 
@@ -30,14 +30,12 @@ export default function LeadForm() {
         isSubmitting: false, isSuccess: false, error: ''
     });
 
-    // Offers panel state
     const [showOffers, setShowOffers] = useState(false);
     const [offers, setOffers] = useState([]);
     const [offersLoading, setOffersLoading] = useState(false);
 
     const canFetch = formData.email && formData.requirementType && formData.budget;
 
-    // Reset panel whenever key fields change — forces fresh fetch on next open
     useEffect(() => {
         setShowOffers(false);
         setOffers([]);
@@ -63,16 +61,13 @@ export default function LeadForm() {
     };
 
     const toggleOffers = () => {
-        if (!showOffers) {
-            fetchOffers();
-        }
+        if (!showOffers) fetchOffers();
         setShowOffers(o => !o);
     };
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
-
         if (['budget', 'requirementType', 'email'].includes(name) && couponState.isApplied) {
             setCouponState({
                 isValidating: false, isApplied: false,
@@ -82,7 +77,6 @@ export default function LeadForm() {
         }
     };
 
-    // Core validation logic — accepts an explicit code so it can be called programmatically
     const doValidate = async (code) => {
         if (!code) {
             setCouponState(prev => ({ ...prev, error: 'Please enter a coupon code' }));
@@ -104,7 +98,7 @@ export default function LeadForm() {
                 isValidating: false, isApplied: true,
                 discountAmount: response.data.discountAmount,
                 finalPrice: response.data.finalPrice,
-                error: '', success: 'Coupon applied successfully!'
+                error: '', success: 'Coupon applied!'
             });
         } catch (error) {
             setCouponState({
@@ -121,7 +115,6 @@ export default function LeadForm() {
         doValidate(formData.couponCode);
     };
 
-    // Called when user clicks an offer card — fills the input and auto-validates
     const applyOffer = (code) => {
         setFormData(prev => ({ ...prev, couponCode: code }));
         setShowOffers(false);
@@ -146,7 +139,7 @@ export default function LeadForm() {
                 setFormData({ name: '', phone: '', email: '', city: '', requirementType: '', budget: '', message: '', couponCode: '' });
                 setCouponState({ isValidating: false, isApplied: false, discountAmount: 0, finalPrice: 0, error: '', success: '' });
                 setSubmitState({ isSubmitting: false, isSuccess: false, error: '' });
-            }, 3000);
+            }, 4000);
         } catch (error) {
             setSubmitState({
                 isSubmitting: false, isSuccess: false,
@@ -157,12 +150,12 @@ export default function LeadForm() {
 
     if (submitState.isSuccess) {
         return (
-            <div className="glass-panel lead-form-container success-screen">
-                <div className="success-icon-wrap">
-                    <CheckCircle size={36} color="var(--accent-green)" />
-                </div>
+            <div className="glass-panel lead-form-container" style={{ textAlign: 'center', padding: '3.5rem 2rem' }}>
+                <CheckCircle size={48} color="var(--accent-green)" style={{ marginBottom: '1rem' }} strokeWidth={1.5} />
                 <h2 className="form-title" style={{ marginBottom: '0.5rem' }}>You're all set!</h2>
-                <p className="form-subtitle" style={{ marginBottom: 0 }}>We've received your request and will be in touch shortly.</p>
+                <p className="form-subtitle" style={{ marginBottom: 0 }}>
+                    We've got your request and will be in touch shortly.
+                </p>
             </div>
         );
     }
@@ -170,7 +163,7 @@ export default function LeadForm() {
     return (
         <div className="glass-panel lead-form-container">
             <h2 className="form-title">Get a quote</h2>
-            <p className="form-subtitle">Fill in your details below. If you have a promo code, apply it to see your savings.</p>
+            <p className="form-subtitle">Fill in your details. Have a promo code? Apply it to see your savings.</p>
 
             <form onSubmit={handleSubmit}>
                 <div className="form-row">
@@ -236,7 +229,6 @@ export default function LeadForm() {
                         placeholder="Tell us more about your requirements..." />
                 </div>
 
-                {/* ── Coupon Section ── */}
                 <div className="coupon-section">
                     <label className="form-label">
                         <Tag size={13} style={{ display: 'inline', marginRight: '4px', verticalAlign: 'middle' }} />
@@ -257,7 +249,6 @@ export default function LeadForm() {
                         )}
                     </div>
 
-                    {/* View available offers toggle */}
                     {!couponState.isApplied && (
                         <button type="button" className="offers-toggle" onClick={toggleOffers}>
                             <Sparkles size={13} />
@@ -266,7 +257,6 @@ export default function LeadForm() {
                         </button>
                     )}
 
-                    {/* Offers panel */}
                     {showOffers && (
                         <div className="offers-panel">
                             {!canFetch ? (
@@ -276,13 +266,13 @@ export default function LeadForm() {
                             ) : offersLoading ? (
                                 <div className="offers-loading">
                                     <Loader2 size={18} className="spinner" color="var(--primary)" />
-                                    <span>Finding offers for you…</span>
+                                    <span>Finding offers…</span>
                                 </div>
                             ) : offers.length === 0 ? (
                                 <p className="offers-hint">No offers available for your current selection.</p>
                             ) : (
                                 <>
-                                    <p className="offers-label">{offers.length} offer{offers.length > 1 ? 's' : ''} available for you</p>
+                                    <p className="offers-label">{offers.length} offer{offers.length > 1 ? 's' : ''} available</p>
                                     <div className="offers-list">
                                         {offers.map(offer => {
                                             const discount = offer.discountType === 'percentage'
@@ -317,14 +307,10 @@ export default function LeadForm() {
                     )}
 
                     {couponState.error && (
-                        <div className="message error">
-                            <AlertCircle size={14} /> {couponState.error}
-                        </div>
+                        <div className="message error"><AlertCircle size={14} /> {couponState.error}</div>
                     )}
                     {couponState.success && (
-                        <div className="message success">
-                            <CheckCircle size={14} /> {couponState.success}
-                        </div>
+                        <div className="message success"><CheckCircle size={14} /> {couponState.success}</div>
                     )}
 
                     {formData.budget && (
@@ -335,22 +321,20 @@ export default function LeadForm() {
                             </div>
                             {couponState.isApplied && (
                                 <div className="price-row discount-text">
-                                    <span>Discount Applied</span>
+                                    <span>Discount</span>
                                     <span>− ₹{couponState.discountAmount.toLocaleString('en-IN')}</span>
                                 </div>
                             )}
                             <div className="price-row total">
-                                <span>Total Estimate</span>
-                                <span>
-                                    ₹{(couponState.isApplied ? couponState.finalPrice : Number(formData.budget)).toLocaleString('en-IN')}
-                                </span>
+                                <span>Total</span>
+                                <span>₹{(couponState.isApplied ? couponState.finalPrice : Number(formData.budget)).toLocaleString('en-IN')}</span>
                             </div>
                         </div>
                     )}
                 </div>
 
                 {submitState.error && (
-                    <div className="message error" style={{ marginBottom: '1rem', justifyContent: 'center', fontSize: '0.95rem' }}>
+                    <div className="message error" style={{ marginBottom: '1rem', justifyContent: 'center' }}>
                         <AlertCircle size={16} /> {submitState.error}
                     </div>
                 )}
@@ -358,7 +342,7 @@ export default function LeadForm() {
                 <button type="submit" className="btn-submit" disabled={submitState.isSubmitting}>
                     {submitState.isSubmitting
                         ? <><Loader2 className="spinner" size={20} /> Submitting...</>
-                        : 'Submit Request'}
+                        : <>Submit Request <ArrowRight size={18} /></>}
                 </button>
             </form>
         </div>
