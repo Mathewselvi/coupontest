@@ -106,15 +106,6 @@ body {
   cursor: pointer;
 }
 
-.nav-brand::before {
-  content: '';
-  display: inline-block;
-  width: 22px;
-  height: 22px;
-  background: var(--primary);
-  border-radius: 6px;
-  flex-shrink: 0;
-}
 
 /* Desktop nav links */
 .nav-links-desktop {
