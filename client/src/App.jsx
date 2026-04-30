@@ -29,7 +29,9 @@ function NavBar({ isAuthenticated, onLogout }) {
 
     return (
         <nav className="navbar" ref={menuRef}>
-            <Link to="/" className="nav-brand">PromoLeads</Link>
+            <Link to="/" className="nav-brand">
+                Promo<span style={{ color: 'var(--primary)' }}>Leads</span>
+            </Link>
 
             {/* Desktop Links */}
             <div className="nav-links nav-links-desktop">

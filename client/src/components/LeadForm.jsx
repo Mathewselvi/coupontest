@@ -157,18 +157,20 @@ export default function LeadForm() {
 
     if (submitState.isSuccess) {
         return (
-            <div className="glass-panel" style={{ textAlign: 'center', padding: '4rem 2rem' }}>
-                <CheckCircle size={64} color="var(--accent-green)" style={{ margin: '0 auto 1.5rem' }} />
-                <h2 className="form-title">Thank You!</h2>
-                <p className="form-subtitle">Your request has been submitted successfully. We will contact you shortly.</p>
+            <div className="glass-panel lead-form-container success-screen">
+                <div className="success-icon-wrap">
+                    <CheckCircle size={36} color="var(--accent-green)" />
+                </div>
+                <h2 className="form-title" style={{ marginBottom: '0.5rem' }}>You're all set!</h2>
+                <p className="form-subtitle" style={{ marginBottom: 0 }}>We've received your request and will be in touch shortly.</p>
             </div>
         );
     }
 
     return (
         <div className="glass-panel lead-form-container">
-            <h2 className="form-title">Request a Quote</h2>
-            <p className="form-subtitle">Fill in your details and apply promo codes to get the best deals.</p>
+            <h2 className="form-title">Get a quote</h2>
+            <p className="form-subtitle">Fill in your details below. If you have a promo code, apply it to see your savings.</p>
 
             <form onSubmit={handleSubmit}>
                 <div className="form-row">
