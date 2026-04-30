@@ -2366,37 +2366,67 @@ body {
   }
 
   .data-table td {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0.5rem 0;
+    display: grid;
+    grid-template-columns: 110px 1fr;
+    align-items: baseline;
+    padding: 0.625rem 0;
     border-bottom: 1px solid var(--border-light);
     gap: 1rem;
-    min-height: 38px;
+    position: relative;
+  }
+
+  /* Elegant Dotted Divider */
+  .data-table td::after {
+    content: '';
+    position: absolute;
+    left: 115px;
+    right: 0;
+    top: 50%;
+    border-bottom: 1px dotted var(--border);
+    z-index: 0;
+    display: none; /* Can be enabled for receipt style */
   }
 
   .data-table td:last-child {
     border-bottom: none;
-    padding-bottom: 0.25rem;
+    padding-bottom: 0;
   }
 
   .data-table td::before {
     content: attr(data-label);
-    font-size: 0.72rem;
-    font-weight: 600;
+    font-size: 0.68rem;
+    font-weight: 700;
     color: var(--text-muted);
     text-transform: uppercase;
+    letter-spacing: 0.04em;
     flex-shrink: 0;
+    white-space: nowrap;
   }
 
-  /* Handle long text in mobile card */
+  /* Premium Value Alignment */
   .data-table td > div, 
   .data-table td > span {
     text-align: right;
-    font-size: 0.85rem;
-    word-break: break-all;
-    max-width: 60%;
-    line-height: 1.3;
+    font-size: 0.875rem;
+    color: var(--text-primary);
+    font-weight: 500;
+    word-break: break-word;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+  }
+
+  .data-table td .sub-text {
+    font-size: 0.78rem;
+    color: var(--text-secondary);
+    font-weight: 400;
+    margin-top: 0.1rem;
+  }
+
+  /* Specific fix for contact info grouping */
+  .data-table td[data-label="Name / Contact"] {
+    align-items: flex-start;
   }
 
   .filter-select {
