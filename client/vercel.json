@@ -2,7 +2,7 @@
   "rewrites": [
     {
       "source": "/api/:path*",
-      "destination": "https://BACKEND_URL.vercel.app/api/:path*"
+      "destination": "https://coupontest-rb4q.vercel.app/api/:path*"
     },
     {
       "source": "/(.*)",
