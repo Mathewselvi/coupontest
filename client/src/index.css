@@ -2358,36 +2358,50 @@ body {
 
   .data-table tr {
     display: block;
-    margin-bottom: 1rem;
+    margin-bottom: 0.75rem;
     background: var(--bg-white);
     border: 1px solid var(--border);
     border-radius: var(--radius-md);
-    padding: 1rem;
+    padding: 0.75rem 1rem;
   }
 
   .data-table td {
     display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.25rem;
-    padding: 0.75rem 0;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0;
     border-bottom: 1px solid var(--border-light);
-    text-align: left;
-    word-break: break-word;
+    gap: 1rem;
+    min-height: 38px;
   }
 
   .data-table td:last-child {
     border-bottom: none;
+    padding-bottom: 0.25rem;
   }
 
   .data-table td::before {
     content: attr(data-label);
-    font-size: 0.7rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
+    font-size: 0.72rem;
+    font-weight: 600;
     color: var(--text-muted);
-    margin-right: 0;
+    text-transform: uppercase;
+    flex-shrink: 0;
+  }
+
+  /* Handle long text in mobile card */
+  .data-table td > div, 
+  .data-table td > span {
+    text-align: right;
+    font-size: 0.85rem;
+    word-break: break-all;
+    max-width: 60%;
+    line-height: 1.3;
+  }
+
+  .filter-select {
+    color: var(--text-primary) !important;
+    background-color: var(--bg-white) !important;
   }
 }
 
