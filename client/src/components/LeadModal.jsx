@@ -6,14 +6,15 @@ const authHeaders = () => ({ Authorization: `Bearer ${localStorage.getItem('admi
 
 function Detail({ icon, label, value, highlight }) {
     return (
-        <div className="detail-row">
-            <div className="detail-label">
-                <span style={{ display:'inline-flex', alignItems:'center', gap:'0.35rem', color:'var(--primary)' }}>
-                    {icon} {label}
-                </span>
+        <div className="premium-detail-item">
+            <div className="premium-detail-icon">
+                {icon}
             </div>
-            <div className={`detail-value${highlight ? ' highlight-val' : ''}`}>
-                {value || '—'}
+            <div className="premium-detail-content">
+                <span className="premium-detail-label">{label}</span>
+                <span className={`premium-detail-value ${highlight ? 'highlight-val' : ''}`}>
+                    {value || '—'}
+                </span>
             </div>
         </div>
     );
@@ -48,17 +49,25 @@ export default function LeadModal({ leadId, onClose }) {
                     </div>
                 ) : lead ? (
                     <div>
-                        {/* Detail rows */}
-                        <Detail icon={<User size={15} />} label="Full Name" value={lead.name} />
-                        <Detail icon={<Phone size={15} />} label="Phone" value={lead.phone} />
-                        <Detail icon={<Mail size={15} />} label="Email" value={lead.email} />
-                        <Detail icon={<MapPin size={15} />} label="City" value={lead.city} />
-                        <Detail icon={<Briefcase size={15} />} label="Requirement" value={lead.requirementType} />
-                        <Detail icon={<IndianRupee size={15} />} label="Budget" value={`₹${lead.budget.toLocaleString('en-IN')}`} />
+                    <div className="premium-details-grid">
+                        <div className="premium-details-section">
+                            <Detail icon={<User size={18} />} label="Full Name" value={lead.name} />
+                            <Detail icon={<Phone size={18} />} label="Phone Number" value={lead.phone} />
+                            <Detail icon={<Mail size={18} />} label="Email Address" value={lead.email} />
+                        </div>
+                        
+                        <div className="premium-details-section">
+                            <Detail icon={<MapPin size={18} />} label="Location" value={lead.city} />
+                            <Detail icon={<Briefcase size={18} />} label="Service Requirement" value={lead.requirementType} />
+                            <Detail icon={<IndianRupee size={18} />} label="Estimated Budget" value={`₹${lead.budget.toLocaleString('en-IN')}`} />
+                        </div>
 
                         {lead.message && (
-                            <Detail icon={<MessageSquare size={15} />} label="Message" value={lead.message} />
+                            <div className="premium-details-section wide">
+                                <Detail icon={<MessageSquare size={18} />} label="Additional Message" value={lead.message} />
+                            </div>
                         )}
+                    </div>
 
                         {/* Pricing Summary */}
                         <div style={{
