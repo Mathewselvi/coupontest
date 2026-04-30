@@ -1,0 +1,437 @@
+{
+  "info": {
+    "_postman_id": "c1a2b3c4-d5e6-7f8a-9b0c-1d2e3f4a5b6c",
+    "name": "Coupon Lead System",
+    "description": "Full API collection for the Coupon-Based Lead Form system.\n\nBase URL: http://localhost:8080\n\nWorkflow:\n1. POST /api/admin/login → copy the token\n2. Set the 'adminToken' collection variable to that token\n3. All protected routes (GET /api/lead, GET /api/coupon) use Bearer auth automatically",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080",
+      "type": "string"
+    },
+    {
+      "key": "adminToken",
+      "value": "",
+      "type": "string",
+      "description": "Paste the JWT token from Admin Login response here"
+    }
+  ],
+  "item": [
+    {
+      "name": "Admin",
+      "item": [
+        {
+          "name": "Admin Login (correct password)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const json = pm.response.json();",
+                  "    pm.collectionVariables.set('adminToken', json.token);",
+                  "    pm.test('Login successful and token saved', () => pm.expect(json.success).to.be.true);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"password\": \"admin123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "login"]
+            },
+            "description": "Returns a JWT valid for 8 hours. The test script auto-saves the token to the 'adminToken' collection variable."
+          },
+          "response": []
+        },
+        {
+          "name": "Admin Login (wrong password)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"password\": \"wrongpassword\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "login"]
+            },
+            "description": "Expected: 401 Invalid password"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Coupon Validation",
+      "item": [
+        {
+          "name": "SAVE10 — valid (budget ≥ ₹500)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"couponCode\": \"SAVE10\",\n    \"budget\": 1000,\n    \"requirementType\": \"Service\",\n    \"email\": \"test@example.com\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/coupon/validate",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "coupon", "validate"]
+            },
+            "description": "Expected: 200 — 10% off → discount ₹100, final ₹900"
+          },
+          "response": []
+        },
+        {
+          "name": "SAVE10 — min order not met (budget < ₹500)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"couponCode\": \"SAVE10\",\n    \"budget\": 300,\n    \"requirementType\": \"Service\",\n    \"email\": \"test@example.com\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/coupon/validate",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "coupon", "validate"]
+            },
+            "description": "Expected: 400 — Minimum budget required for this coupon is 500"
+          },
+          "response": []
+        },
+        {
+          "name": "FLAT100 — valid for Service",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"couponCode\": \"FLAT100\",\n    \"budget\": 1000,\n    \"requirementType\": \"Service\",\n    \"email\": \"test@example.com\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/coupon/validate",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "coupon", "validate"]
+            },
+            "description": "Expected: 200 — flat ₹100 off → final ₹900"
+          },
+          "response": []
+        },
+        {
+          "name": "FLAT100 — not applicable for Product",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"couponCode\": \"FLAT100\",\n    \"budget\": 1000,\n    \"requirementType\": \"Product\",\n    \"email\": \"test@example.com\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/coupon/validate",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "coupon", "validate"]
+            },
+            "description": "Expected: 400 — This coupon is not applicable for Product"
+          },
+          "response": []
+        },
+        {
+          "name": "NEWUSER — valid for first-time email",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"couponCode\": \"NEWUSER\",\n    \"budget\": 2000,\n    \"requirementType\": \"Consultation\",\n    \"email\": \"brandnew@example.com\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/coupon/validate",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "coupon", "validate"]
+            },
+            "description": "Expected: 200 — 20% off → discount ₹400, final ₹1600 (only if brandnew@example.com has never submitted a lead)"
+          },
+          "response": []
+        },
+        {
+          "name": "NEWUSER — rejected for returning user",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"couponCode\": \"NEWUSER\",\n    \"budget\": 2000,\n    \"requirementType\": \"Consultation\",\n    \"email\": \"john@example.com\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/coupon/validate",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "coupon", "validate"]
+            },
+            "description": "Expected: 400 — This coupon is only valid for first-time users (use an email that already has a lead in DB)"
+          },
+          "response": []
+        },
+        {
+          "name": "EXPIRE50 — expired coupon",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"couponCode\": \"EXPIRE50\",\n    \"budget\": 1000,\n    \"requirementType\": \"Service\",\n    \"email\": \"test@example.com\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/coupon/validate",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "coupon", "validate"]
+            },
+            "description": "Expected: 400 — This coupon has expired"
+          },
+          "response": []
+        },
+        {
+          "name": "Invalid coupon code",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"couponCode\": \"FAKECODE\",\n    \"budget\": 1000,\n    \"requirementType\": \"Service\",\n    \"email\": \"test@example.com\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/coupon/validate",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "coupon", "validate"]
+            },
+            "description": "Expected: 400 — Invalid or inactive coupon code"
+          },
+          "response": []
+        },
+        {
+          "name": "Missing required field",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"couponCode\": \"SAVE10\",\n    \"budget\": 1000\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/coupon/validate",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "coupon", "validate"]
+            },
+            "description": "Expected: 400 — Joi validation error (requirementType and email are required)"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Lead Submission",
+      "item": [
+        {
+          "name": "Submit lead with coupon (SAVE10)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"John Doe\",\n    \"phone\": \"9876543210\",\n    \"email\": \"john@example.com\",\n    \"city\": \"Mumbai\",\n    \"requirementType\": \"Service\",\n    \"budget\": 1000,\n    \"message\": \"Looking for a service quote\",\n    \"couponCode\": \"SAVE10\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/lead/submit",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "lead", "submit"]
+            },
+            "description": "Expected: 201 — Lead saved, discount ₹100 applied, finalPrice ₹900"
+          },
+          "response": []
+        },
+        {
+          "name": "Submit lead without coupon",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"Jane Smith\",\n    \"phone\": \"9123456780\",\n    \"email\": \"jane@example.com\",\n    \"city\": \"Delhi\",\n    \"requirementType\": \"Product\",\n    \"budget\": 5000,\n    \"message\": \"\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/lead/submit",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "lead", "submit"]
+            },
+            "description": "Expected: 201 — Lead saved, no discount, finalPrice equals budget"
+          },
+          "response": []
+        },
+        {
+          "name": "Duplicate submission (same email within 10 min)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"John Doe\",\n    \"phone\": \"9876543210\",\n    \"email\": \"john@example.com\",\n    \"city\": \"Mumbai\",\n    \"requirementType\": \"Service\",\n    \"budget\": 1000,\n    \"message\": \"Duplicate attempt\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/lead/submit",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "lead", "submit"]
+            },
+            "description": "Expected: 429 — You have already submitted a request recently. Run 'Submit lead with coupon' first, then run this immediately."
+          },
+          "response": []
+        },
+        {
+          "name": "Invalid phone number",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"Bad Actor\",\n    \"phone\": \"12345\",\n    \"email\": \"bad@example.com\",\n    \"city\": \"Pune\",\n    \"requirementType\": \"Service\",\n    \"budget\": 500,\n    \"message\": \"\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/lead/submit",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "lead", "submit"]
+            },
+            "description": "Expected: 400 — Phone number must be exactly 10 digits"
+          },
+          "response": []
+        },
+        {
+          "name": "Missing required fields",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"Incomplete\",\n    \"phone\": \"9999999999\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/lead/submit",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "lead", "submit"]
+            },
+            "description": "Expected: 400 — Joi validation error"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Admin — Protected Routes",
+      "item": [
+        {
+          "name": "Get All Leads (authenticated)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/lead",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "lead"]
+            },
+            "description": "Expected: 200 — Array of all leads with coupon details populated. Run Admin Login first to set {{adminToken}}."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Leads filtered by coupon",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/lead?couponId=none",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "lead"],
+              "query": [{ "key": "couponId", "value": "none" }]
+            },
+            "description": "Expected: 200 — Only leads with no coupon applied. Replace 'none' with a real coupon ObjectId to filter by specific coupon."
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Coupons (authenticated)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/coupon",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "coupon"]
+            },
+            "description": "Expected: 200 — All coupons sorted by creation date."
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Leads (no token — should fail)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/lead",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "lead"]
+            },
+            "description": "Expected: 401 — Not authorized, no token"
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Leads (expired/invalid token — should fail)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer invalidtoken.xyz.abc"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/lead",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "lead"]
+            },
+            "description": "Expected: 401 — Token invalid or expired"
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}
