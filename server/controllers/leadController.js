@@ -141,4 +141,41 @@ const deleteLead = async (req, res) => {
     }
 };
 
-module.exports = { submitLead, getLeads, getLeadById, deleteLead };
+const exportLeads = async (req, res) => {
+    try {
+        const { couponId, requirementType, search, startDate, endDate } = req.query;
+
+        const query = {};
+
+        if (couponId === 'none') query.couponApplied = null;
+        else if (couponId) query.couponApplied = couponId;
+
+        if (requirementType) query.requirementType = requirementType;
+
+        if (search) {
+            const rx = { $regex: search.trim(), $options: 'i' };
+            query.$or = [{ email: rx }, { phone: rx }, { name: rx }];
+        }
+
+        if (startDate || endDate) {
+            query.createdAt = {};
+            if (startDate) query.createdAt.$gte = new Date(startDate);
+            if (endDate) {
+                const end = new Date(endDate);
+                end.setHours(23, 59, 59, 999);
+                query.createdAt.$lte = end;
+            }
+        }
+
+        const leads = await Lead.find(query)
+            .populate('couponApplied', 'code discountType discountValue')
+            .sort({ createdAt: -1 });
+
+        res.status(200).json({ leads, total: leads.length });
+    } catch (error) {
+        console.error('Export leads error:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+};
+
+module.exports = { submitLead, getLeads, getLeadById, deleteLead, exportLeads };

@@ -132,12 +132,10 @@ const getAvailableCoupons = async (req, res) => {
             $expr: { $lt: ['$currentUses', '$maxUses'] },
         };
 
-        // Filter by budget minimum if provided
         if (budgetNum > 0) {
             query.minOrderValue = { $lte: budgetNum };
         }
 
-        // Filter by requirementType if provided
         if (requirementType) {
             query.$or = [
                 { applicableTo: 'All' },
@@ -149,7 +147,6 @@ const getAvailableCoupons = async (req, res) => {
             .select('code discountType discountValue minOrderValue applicableTo isFirstTimeOnly maxUses currentUses')
             .sort({ discountValue: -1 });
 
-        // For first-time-only coupons: exclude if email already exists in leads
         if (email) {
             const emailLower = email.toLowerCase().trim();
             const isReturningUser = await Lead.exists({ email: emailLower });
@@ -165,4 +162,35 @@ const getAvailableCoupons = async (req, res) => {
     }
 };
 
-module.exports = { validateCoupon, getAllCoupons, createCoupon, updateCoupon, deleteCoupon, getAvailableCoupons };
+const bulkImportCoupons = async (req, res) => {
+    try {
+        const { coupons } = req.body;
+        if (!Array.isArray(coupons) || coupons.length === 0) {
+            return res.status(400).json({ error: 'No coupons provided' });
+        }
+
+        let imported = 0;
+        let skipped = 0;
+        const errors = [];
+
+        for (const item of coupons) {
+            const { error, value } = createCouponSchema.validate(item);
+            if (error) {
+                errors.push(`${item.code || '?'}: ${error.details[0].message}`);
+                continue;
+            }
+            const code = value.code.toUpperCase().trim();
+            const existing = await Coupon.findOne({ code });
+            if (existing) { skipped++; continue; }
+            await new Coupon({ ...value, code }).save();
+            imported++;
+        }
+
+        res.status(200).json({ imported, skipped, errors });
+    } catch (error) {
+        console.error('Bulk import error:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+};
+
+module.exports = { validateCoupon, getAllCoupons, createCoupon, updateCoupon, deleteCoupon, getAvailableCoupons, bulkImportCoupons };

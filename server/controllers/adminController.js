@@ -1,18 +1,16 @@
 const Lead = require('../models/Lead');
 const Coupon = require('../models/Coupon');
 
-const getLeadsChart = async (req, res) => {
+const getLeadsChart = async (_req, res) => {
     try {
         const days = 7;
         const result = [];
         
-        // Generate last 7 days in UTC
         for (let i = days - 1; i >= 0; i--) {
             const d = new Date();
             d.setUTCDate(d.getUTCDate() - i);
             const dateStr = d.toISOString().split('T')[0];
-            
-            // Get leads for this specific UTC day
+
             const startOfDay = new Date(dateStr);
             const endOfDay = new Date(dateStr);
             endOfDay.setUTCHours(23, 59, 59, 999);
@@ -85,7 +83,7 @@ const getStats = async (req, res) => {
             totalBudget: totalBudgetRes[0]?.total || 0,
             typeDistribution: typeDistribution.map(t => ({ name: t._id || 'Unknown', value: t.count })),
             topCoupons: topCouponsRaw
-                .filter(c => c.coupon) // Only show if coupon still exists
+                .filter(c => c.coupon)
                 .map(c => ({
                     code: c.coupon.code,
                     count: c.count,

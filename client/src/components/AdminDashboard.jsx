@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import axios from 'axios';
-import { Loader2, Search, X, AlertCircle, Trash2, TriangleAlert } from 'lucide-react';
+import { Loader2, Search, X, AlertCircle, Trash2, TriangleAlert, Download } from 'lucide-react';
+import * as XLSX from 'xlsx';
 import LeadModal from './LeadModal';
 import Pagination from './Pagination';
 import { useToast } from '../context/ToastContext';
@@ -60,6 +61,7 @@ export default function AdminDashboard({ coupons, onUnauthorized, externalSearch
     const [selectedLeadId, setSelectedLeadId] = useState(null);
     const [confirmLead, setConfirmLead] = useState(null);
     const [deleting, setDeleting] = useState(false);
+    const [exporting, setExporting] = useState(false);
     const showToast = useToast();
 
     const [search, setSearch] = useState('');
@@ -126,6 +128,50 @@ export default function AdminDashboard({ coupons, onUnauthorized, externalSearch
         }
     };
 
+    const exportToExcel = async () => {
+        setExporting(true);
+        try {
+            const params = new URLSearchParams();
+            if (debouncedSearch) params.set('search', debouncedSearch);
+            if (couponFilter) params.set('couponId', couponFilter);
+            if (typeFilter) params.set('requirementType', typeFilter);
+            if (startDate) params.set('startDate', startDate);
+            if (endDate) params.set('endDate', endDate);
+
+            const res = await axios.get(`/api/lead/export?${params}`, { headers: authHeaders() });
+            const allLeads = res.data.leads;
+
+            const rows = allLeads.map((l, i) => ({
+                '#': i + 1,
+                'Date': new Date(l.createdAt).toLocaleDateString('en-IN'),
+                'Name': l.name,
+                'Phone': l.phone,
+                'Email': l.email,
+                'City': l.city,
+                'Requirement Type': l.requirementType,
+                'Budget (INR)': l.budget,
+                'Coupon Code': l.couponApplied?.code || 'None',
+                'Discount (INR)': l.discountAmount,
+                'Final Price (INR)': l.finalPrice,
+                'Message': l.message || '',
+            }));
+
+            const ws = XLSX.utils.json_to_sheet(rows);
+            ws['!cols'] = [
+                { wch: 5 }, { wch: 12 }, { wch: 20 }, { wch: 14 }, { wch: 26 },
+                { wch: 14 }, { wch: 18 }, { wch: 14 }, { wch: 14 }, { wch: 14 }, { wch: 16 }, { wch: 30 },
+            ];
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, 'Leads');
+            XLSX.writeFile(wb, `leads_${new Date().toISOString().slice(0, 10)}.xlsx`);
+            showToast(`Exported ${rows.length} lead${rows.length !== 1 ? 's' : ''}`);
+        } catch {
+            showToast('Export failed', 'error');
+        } finally {
+            setExporting(false);
+        }
+    };
+
     const clearFilters = () => {
         setSearch('');
         setCouponFilter('');
@@ -138,7 +184,6 @@ export default function AdminDashboard({ coupons, onUnauthorized, externalSearch
 
     return (
         <div>
-            {/* Filters bar */}
             <div className="filters-bar">
                 {!externalSearch && externalSearch !== '' && (
                     <div className="search-wrap">
@@ -177,10 +222,14 @@ export default function AdminDashboard({ coupons, onUnauthorized, externalSearch
                             <X size={14} /> Clear
                         </button>
                     )}
+
+                    <button className="btn-export" onClick={exportToExcel} disabled={exporting} title="Export to Excel">
+                        {exporting ? <Loader2 size={14} className="spinner" /> : <Download size={14} />}
+                        {exporting ? 'Exporting…' : 'Export'}
+                    </button>
                 </div>
             </div>
 
-            {/* Table */}
             {loading ? (
                 <div style={{ display: 'flex', justifyContent: 'center', padding: '3rem' }}>
                     <Loader2 size={36} className="spinner" color="var(--primary)" />

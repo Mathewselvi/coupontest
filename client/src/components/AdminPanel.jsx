@@ -38,12 +38,10 @@ export default function AdminPanel({ onUnauthorized }) {
     const [notificationCount, setNotificationCount] = useState(0);
 
     useEffect(() => {
-        // Fetch coupons
         axios.get('/api/coupon', { headers: authHeaders() })
             .then(r => setCoupons(r.data))
             .catch(() => {});
-            
-        // Fetch new leads count (today)
+
         const today = new Date().toISOString().split('T')[0];
         axios.get(`/api/lead?startDate=${today}`, { headers: authHeaders() })
             .then(r => setNotificationCount(r.data.total))
@@ -58,10 +56,8 @@ export default function AdminPanel({ onUnauthorized }) {
 
     return (
         <div className={`admin-layout ${isSidebarOpen ? 'sidebar-open' : ''}`}>
-            {/* Overlay for mobile sidebar */}
             {isSidebarOpen && <div className="sidebar-overlay" onClick={() => setIsSidebarOpen(false)}></div>}
-            
-            {/* Sidebar */}
+
             <aside className={`admin-sidebar ${isSidebarOpen ? 'open' : ''}`}>
                 <Link to="/" className="sidebar-brand">
                     <div className="sidebar-brand-mark">CT</div>
@@ -103,9 +99,7 @@ export default function AdminPanel({ onUnauthorized }) {
                 </div>
             </aside>
 
-            {/* Main content */}
             <main className="admin-main">
-                {/* Top Bar */}
                 <header className="top-bar">
                     <div className="top-bar-inner">
                         <div className="top-bar-left-group">
@@ -149,11 +143,7 @@ export default function AdminPanel({ onUnauthorized }) {
                     {activeTab === 'leads' ? (
                         <>
                             <h1 className="admin-page-title">Analytics Overview</h1>
-                            
-                            {/* Stats & Charts Grid */}
                             <StatsCards />
-
-                            {/* Recent Leads Preview */}
                             <div className="dashboard-card col-12" style={{ marginTop: '2rem' }}>
                                 <div style={{ marginBottom: '1.5rem' }}>
                                     <h2 style={{ fontSize: '1.25rem', fontWeight: 700, color: 'var(--text-main)' }}>Recent Leads</h2>

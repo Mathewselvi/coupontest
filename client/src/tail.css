@@ -106,9 +106,6 @@
   cursor: not-allowed;
 }
 
-/* ============================================
-   View Report Button (StatsCards)
-   ============================================ */
 .view-report-btn {
   display: inline-flex;
   align-items: center;
@@ -166,9 +163,6 @@
   margin-bottom: 0.375rem;
 }
 
-/* ============================================
-   Toast Notifications
-   ============================================ */
 .toast-container {
   position: fixed;
   bottom: 1.25rem;
@@ -232,9 +226,6 @@
   opacity: 1;
 }
 
-/* ============================================
-   Premium Detail Styles (LeadModal)
-   ============================================ */
 .premium-details-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -293,9 +284,6 @@
   word-break: break-word;
 }
 
-/* ============================================
-   Lead Pricing Summary (LeadModal)
-   ============================================ */
 .lead-pricing-wrap {
   margin-top: 1.25rem;
   background: var(--bg);
@@ -359,9 +347,6 @@
   color: var(--text-muted);
 }
 
-/* ============================================
-   Responsive — Tablet ≤ 1024px
-   ============================================ */
 @media (max-width: 1024px) {
   .stats-grid {
     grid-template-columns: repeat(2, 1fr);
@@ -376,9 +361,6 @@
   }
 }
 
-/* ============================================
-   Responsive — Mobile ≤ 768px
-   ============================================ */
 @media (max-width: 768px) {
   .nav-links-desktop {
     display: none;
@@ -392,18 +374,18 @@
     padding: 1rem;
   }
 
-  /* Restore padding removed by :has() selector */
+  
   .main-content:has(.admin-layout) {
     padding: 0;
   }
 
-  /* Sidebar collapses — use mobile toggle to open */
+  
   .admin-layout {
     flex-direction: column;
     min-height: unset;
   }
 
-  /* Keep sidebar reachable via the .open toggle — don't display:none it */
+  
   .admin-sidebar {
     visibility: hidden;
   }
@@ -474,7 +456,7 @@
     min-width: 130px;
   }
 
-  /* Table: card layout on mobile */
+  
   .table-container {
     border: none;
     border-radius: 0;
@@ -636,9 +618,6 @@
   }
 }
 
-/* ============================================
-   Responsive — Small Mobile ≤ 480px
-   ============================================ */
 @media (max-width: 480px) {
   .navbar {
     padding: 0 1rem;
@@ -673,7 +652,7 @@
   .form-input,
   .form-select,
   .form-textarea {
-    font-size: 16px; /* prevents iOS zoom */
+    font-size: 16px; 
     padding: 0.6875rem 0.8125rem;
   }
 
@@ -758,9 +737,6 @@
   }
 }
 
-/* ============================================
-   Responsive — Very Small Mobile ≤ 360px
-   ============================================ */
 @media (max-width: 360px) {
   .navbar-premium {
     height: 56px;
@@ -812,7 +788,7 @@
     font-size: 1.125rem;
   }
 
-  /* Make rating circles smaller on tiny screens */
+  
   .rating-circle {
     width: 80px !important;
     height: 80px !important;
@@ -833,9 +809,6 @@
   }
 }
 
-/* ============================================
-   Admin Panel — Top Bar Mobile
-   ============================================ */
 @media (max-width: 768px) {
   .top-bar {
     padding: 0 1rem;
@@ -843,7 +816,7 @@
     gap: 0.75rem;
   }
 
-  /* Show the hamburger toggle on all ≤768px */
+  
   .mobile-toggle {
     display: flex;
     align-items: center;
@@ -871,7 +844,7 @@
     margin-bottom: 1rem;
   }
 
-  /* Dashboard cards full-width on mobile */
+  
   .col-8, .col-4, .col-6, .col-5, .col-7, .col-12 {
     grid-column: span 12;
   }
@@ -880,16 +853,13 @@
     gap: 0.875rem;
   }
 
-  /* Stats row scrolls horizontally on very narrow screens */
+  
   .stats-grid {
     grid-template-columns: repeat(2, 1fr);
     gap: 0.75rem;
   }
 }
 
-/* ============================================
-   Landscape Mobile (phones rotated)
-   ============================================ */
 @media (max-height: 500px) and (orientation: landscape) {
   .navbar-premium {
     height: 50px;
@@ -915,9 +885,6 @@
   }
 }
 
-/* ============================================
-   Safe Area Insets (Notched phones — iPhone X+)
-   ============================================ */
 @supports (padding-bottom: env(safe-area-inset-bottom)) {
   .toast-container {
     bottom: calc(1rem + env(safe-area-inset-bottom));
@@ -934,9 +901,6 @@
   }
 }
 
-/* ============================================
-   Reduced Motion Accessibility
-   ============================================ */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -951,11 +915,8 @@
   }
 }
 
-/* ============================================
-   Form — touch target improvements
-   ============================================ */
 @media (hover: none) and (pointer: coarse) {
-  /* Touch device: bigger tap targets */
+  
   .btn-apply,
   .btn-remove {
     min-height: 44px;

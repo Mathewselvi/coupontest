@@ -2,13 +2,13 @@
   "info": {
     "_postman_id": "c1a2b3c4-d5e6-7f8a-9b0c-1d2e3f4a5b6c",
     "name": "Coupon Lead System",
-    "description": "Full API collection for the Coupon-Based Lead Form system.\n\nBase URL: http://localhost:8080\n\nWorkflow:\n1. POST /api/admin/login → copy the token\n2. Set the 'adminToken' collection variable to that token\n3. All protected routes (GET /api/lead, GET /api/coupon) use Bearer auth automatically",
+    "description": "Full API collection for the Coupon-Based Lead Form system.\n\nBase URL: http://localhost:8081\n\nWorkflow:\n1. POST /api/admin/login → copy the token\n2. Set the 'adminToken' collection variable to that token\n3. All protected routes (GET /api/lead, GET /api/coupon) use Bearer auth automatically",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
     {
       "key": "baseUrl",
-      "value": "http://localhost:8080",
+      "value": "http://localhost:8081",
       "type": "string"
     },
     {
@@ -428,6 +428,133 @@
               "path": ["api", "lead"]
             },
             "description": "Expected: 401 — Token invalid or expired"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Export & Import",
+      "item": [
+        {
+          "name": "Export All Leads (authenticated)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/lead/export",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "lead", "export"],
+              "query": [
+                { "key": "search", "value": "", "disabled": true },
+                { "key": "requirementType", "value": "Service", "disabled": true },
+                { "key": "startDate", "value": "2026-01-01", "disabled": true },
+                { "key": "endDate", "value": "2026-12-31", "disabled": true },
+                { "key": "couponId", "value": "none", "disabled": true }
+              ]
+            },
+            "description": "Expected: 200 — All leads matching optional filters with no pagination cap. Enable any query param to filter. Used by the frontend Export button."
+          },
+          "response": []
+        },
+        {
+          "name": "Export Leads filtered by type",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/lead/export?requirementType=Service",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "lead", "export"],
+              "query": [
+                { "key": "requirementType", "value": "Service" }
+              ]
+            },
+            "description": "Expected: 200 — Only Service-type leads, all records, no pagination limit."
+          },
+          "response": []
+        },
+        {
+          "name": "Export Leads — no token (should fail)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/lead/export",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "lead", "export"]
+            },
+            "description": "Expected: 401 — Not authorized, no token"
+          },
+          "response": []
+        },
+        {
+          "name": "Bulk Import Coupons (authenticated)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"coupons\": [\n        {\n            \"code\": \"SUMMER20\",\n            \"discountType\": \"percentage\",\n            \"discountValue\": 20,\n            \"minOrderValue\": 500,\n            \"applicableTo\": [\"All\"],\n            \"maxUses\": 100,\n            \"expiryDate\": \"2027-12-31\",\n            \"isFirstTimeOnly\": false,\n            \"isActive\": true\n        },\n        {\n            \"code\": \"FLAT150\",\n            \"discountType\": \"flat\",\n            \"discountValue\": 150,\n            \"minOrderValue\": 1000,\n            \"applicableTo\": [\"Service\", \"Product\"],\n            \"maxUses\": 50,\n            \"expiryDate\": \"2027-09-30\",\n            \"isFirstTimeOnly\": false,\n            \"isActive\": true\n        }\n    ]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/coupon/bulk-import",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "coupon", "bulk-import"]
+            },
+            "description": "Expected: 200 — { imported: 2, skipped: 0, errors: [] }. Duplicate codes are skipped (not errored). Invalid rows are reported in the errors array."
+          },
+          "response": []
+        },
+        {
+          "name": "Bulk Import — duplicate codes (skipped)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{adminToken}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"coupons\": [\n        {\n            \"code\": \"SAVE10\",\n            \"discountType\": \"percentage\",\n            \"discountValue\": 10,\n            \"minOrderValue\": 500,\n            \"applicableTo\": [\"All\"],\n            \"maxUses\": 100,\n            \"expiryDate\": \"2027-12-31\",\n            \"isFirstTimeOnly\": false,\n            \"isActive\": true\n        }\n    ]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/coupon/bulk-import",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "coupon", "bulk-import"]
+            },
+            "description": "Expected: 200 — { imported: 0, skipped: 1, errors: [] }. SAVE10 already exists so it is skipped."
+          },
+          "response": []
+        },
+        {
+          "name": "Bulk Import — no token (should fail)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"coupons\": []\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/coupon/bulk-import",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "coupon", "bulk-import"]
+            },
+            "description": "Expected: 401 — Not authorized, no token"
           },
           "response": []
         }

@@ -14,7 +14,6 @@ const authHeaders = () => ({ Authorization: `Bearer ${localStorage.getItem('admi
 
 const COLORS = ['#5D5FEF', '#8E90FF', '#4BD3FF', '#05A6DD', '#C8C9FF'];
 
-/* ── Mini stat card ── */
 function StatMini({ icon: Icon, label, value, sub, iconColor, iconBg }) {
     return (
         <div className="stat-card-premium">
@@ -34,7 +33,6 @@ function StatMini({ icon: Icon, label, value, sub, iconColor, iconBg }) {
     );
 }
 
-/* ── Custom tooltip ── */
 function ChartTooltip({ active, payload, label }) {
     if (!active || !payload?.length) return null;
     return (
@@ -72,7 +70,6 @@ export default function StatsCards() {
 
     useEffect(() => { fetchData(); }, [fetchData]);
 
-    /* ── Loading ── */
     if (loading) {
         return (
             <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '4rem', width: '100%' }}>
@@ -81,7 +78,6 @@ export default function StatsCards() {
         );
     }
 
-    /* ── Error ── */
     if (error) {
         return (
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem', padding: '3rem', textAlign: 'center' }}>
@@ -108,7 +104,6 @@ export default function StatsCards() {
     return (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', width: '100%' }}>
 
-            {/* ══ Row 1 — 4 Mini Stat Cards ══ */}
             <div className="stats-grid">
                 <StatMini
                     icon={Users}
@@ -144,10 +139,7 @@ export default function StatsCards() {
                 />
             </div>
 
-            {/* ══ Row 2 — Lead Trend + Distribution ══ */}
             <div className="dashboard-grid">
-
-                {/* Lead Trend Area Chart */}
                 <div className="dashboard-card col-8">
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.25rem' }}>
                         <div>
@@ -203,7 +195,6 @@ export default function StatsCards() {
                     </div>
                 </div>
 
-                {/* Requirement Distribution Donut */}
                 <div className="dashboard-card col-4">
                     <div style={{ fontWeight: 700, fontSize: '1rem', color: 'var(--text-main)', marginBottom: '2px' }}>Requirements</div>
                     <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '0.875rem' }}>Distribution by type</div>
@@ -251,7 +242,6 @@ export default function StatsCards() {
                     )}
                 </div>
 
-                {/* Top Coupons */}
                 <div className="dashboard-card col-6">
                     <div style={{ fontWeight: 700, fontSize: '1rem', color: 'var(--text-main)', marginBottom: '2px' }}>Top Coupons</div>
                     <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '1.25rem' }}>Highest usage performance</div>
@@ -300,7 +290,6 @@ export default function StatsCards() {
                     )}
                 </div>
 
-                {/* Coupon Health */}
                 <div className="dashboard-card col-6">
                     <div style={{ fontWeight: 700, fontSize: '1rem', color: 'var(--text-main)', marginBottom: '2px' }}>Coupon Health</div>
                     <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '1.25rem' }}>System-wide coupon status</div>

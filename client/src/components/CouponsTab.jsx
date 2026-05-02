@@ -1,6 +1,7 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import axios from 'axios';
-import { Loader2, Plus, Pencil, Trash2, AlertCircle, Tag, Clock, RefreshCw, TriangleAlert } from 'lucide-react';
+import { Loader2, Plus, Pencil, Trash2, AlertCircle, Tag, Clock, RefreshCw, TriangleAlert, Upload, FileDown } from 'lucide-react';
+import * as XLSX from 'xlsx';
 import CouponModal from './CouponModal';
 import { useToast } from '../context/ToastContext';
 
@@ -68,10 +69,6 @@ function CouponCard({ coupon, onEdit, onDelete, deleting }) {
     const inactive = !coupon.isActive || expired || exhausted;
     const isPercentage = coupon.discountType === 'percentage';
 
-    const borderColor = inactive ? '#d1d5db'
-        : expired ? '#fca5a5'
-        : '#a5b4fc';
-
     return (
         <div className={`cpn-card ${inactive ? 'cpn-card-dim' : ''}`}>
 
@@ -127,6 +124,8 @@ export default function CouponsTab({ onUnauthorized }) {
     const [modal, setModal] = useState(null);
     const [confirmDelete, setConfirmDelete] = useState(null);
     const [deleting, setDeleting] = useState(false);
+    const [importing, setImporting] = useState(false);
+    const fileInputRef = useRef(null);
     const showToast = useToast();
 
     const fetchCoupons = useCallback(async () => {
@@ -144,6 +143,121 @@ export default function CouponsTab({ onUnauthorized }) {
     }, [onUnauthorized]);
 
     useEffect(() => { fetchCoupons(); }, [fetchCoupons]);
+
+    const exportCoupons = () => {
+        if (coupons.length === 0) { showToast('No coupons to export', 'error'); return; }
+        const now = new Date();
+        const rows = coupons.map((c, i) => {
+            const expired = now > new Date(c.expiryDate);
+            const exhausted = c.currentUses >= c.maxUses;
+            const status = !c.isActive ? 'Inactive' : expired ? 'Expired' : exhausted ? 'Exhausted' : 'Active';
+            return {
+                '#': i + 1,
+                'Code': c.code,
+                'Discount Type': c.discountType,
+                'Discount Value': c.discountValue,
+                'Min Order (INR)': c.minOrderValue,
+                'Applicable To': c.applicableTo.join(', '),
+                'Max Uses': c.maxUses,
+                'Current Uses': c.currentUses,
+                'Used %': Math.round((c.currentUses / c.maxUses) * 100),
+                'Expiry Date': new Date(c.expiryDate),
+                'First Time Only': c.isFirstTimeOnly ? 'Yes' : 'No',
+                'Active': c.isActive ? 'Yes' : 'No',
+                'Status': status,
+            };
+        });
+        const ws = XLSX.utils.json_to_sheet(rows);
+        ws['!cols'] = [
+            { wch: 4 }, { wch: 14 }, { wch: 14 }, { wch: 14 }, { wch: 16 }, { wch: 20 },
+            { wch: 10 }, { wch: 13 }, { wch: 8 }, { wch: 14 }, { wch: 16 }, { wch: 8 }, { wch: 12 },
+        ];
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'Coupons');
+        XLSX.writeFile(wb, `coupons_${new Date().toISOString().slice(0, 10)}.xlsx`);
+        showToast(`Exported ${rows.length} coupon${rows.length !== 1 ? 's' : ''}`);
+    };
+
+    const handleImport = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        setImporting(true);
+        try {
+            const data = await file.arrayBuffer();
+            const wb = XLSX.read(data, { cellDates: true });
+            const ws = wb.Sheets[wb.SheetNames[0]];
+            const rows = XLSX.utils.sheet_to_json(ws, { defval: '' });
+
+            if (rows.length === 0) {
+                showToast('No data found in the file', 'error');
+                return;
+            }
+
+            const parseBool = (val) => {
+                if (typeof val === 'boolean') return val;
+                if (typeof val === 'number') return val !== 0;
+                const s = String(val).toLowerCase().trim();
+                return s === 'true' || s === '1' || s === 'yes';
+            };
+
+            const toNum = (val, def) => {
+                if (val === '' || val === null || val === undefined) return def;
+                const n = Number(val);
+                return isNaN(n) ? def : n;
+            };
+
+            const parseDate = (val) => {
+                if (!val && val !== 0) return undefined;
+                if (val instanceof Date) return isNaN(val) ? undefined : val.toISOString();
+                const s = String(val).trim();
+                if (!s) return undefined;
+                let d = new Date(s);
+                if (!isNaN(d)) return d.toISOString();
+                const m = s.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/);
+                if (m) {
+                    d = new Date(`${m[3]}-${m[2].padStart(2, '0')}-${m[1].padStart(2, '0')}`);
+                    if (!isNaN(d)) return d.toISOString();
+                }
+                return s;
+            };
+
+            const coupons = rows
+                .map(r => ({
+                    code: String(r['Code'] || r['code'] || '').toUpperCase().trim(),
+                    discountType: String(r['Discount Type'] || r['discountType'] || 'flat').toLowerCase().trim(),
+                    discountValue: toNum(r['Discount Value'] ?? r['discountValue'], 0),
+                    minOrderValue: toNum(r['Min Order'] ?? r['Min Order (INR)'] ?? r['minOrderValue'], 0),
+                    applicableTo: String(r['Applicable To'] || r['applicableTo'] || 'All')
+                        .split(',').map(s => s.trim()).filter(Boolean),
+                    maxUses: toNum(r['Max Uses'] ?? r['maxUses'], 100),
+                    expiryDate: parseDate(r['Expiry Date'] ?? r['expiryDate']),
+                    isFirstTimeOnly: parseBool(r['First Time Only'] ?? r['isFirstTimeOnly'] ?? false),
+                    isActive: (r['Active'] === '' || r['Active'] === undefined)
+                        ? true
+                        : parseBool(r['Active']),
+                }))
+                .filter(c => c.code);
+
+            if (coupons.length === 0) {
+                showToast('No valid rows found. Check the Code column.', 'error');
+                return;
+            }
+
+            const res = await axios.post('/api/coupon/bulk-import', { coupons }, { headers: authHeaders() });
+            const { imported, skipped, errors } = res.data;
+            const parts = [`Imported ${imported} coupon${imported !== 1 ? 's' : ''}`];
+            if (skipped > 0) parts.push(`${skipped} skipped (duplicates)`);
+            if (errors.length > 0) parts.push(`${errors.length} failed validation`);
+            showToast(parts.join(', '), errors.length > 0 ? 'error' : 'success');
+            if (errors.length > 0) console.warn('Coupon import errors:', errors);
+            fetchCoupons();
+        } catch (err) {
+            showToast(err.response?.data?.error || 'Import failed', 'error');
+        } finally {
+            setImporting(false);
+            e.target.value = '';
+        }
+    };
 
     const handleDeleteConfirm = async () => {
         if (!confirmDelete) return;
@@ -165,7 +279,6 @@ export default function CouponsTab({ onUnauthorized }) {
 
     return (
         <div>
-            {/* Header */}
             <div className="cpn-header">
                 <div>
                     <h2 className="cpn-title">Coupon Management</h2>
@@ -175,10 +288,24 @@ export default function CouponsTab({ onUnauthorized }) {
                         <span className="cpn-count cpn-count-total">{coupons.length} total</span>
                     </p>
                 </div>
-                <div style={{ display: 'flex', gap: '0.5rem' }}>
+                <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
                     <button className="cpn-btn-refresh" onClick={fetchCoupons} title="Refresh">
                         <RefreshCw size={15} />
                     </button>
+                    <button className="cpn-btn-import" onClick={exportCoupons} title="Export all coupons to Excel">
+                        <FileDown size={15} /> Export
+                    </button>
+                    <label className="cpn-btn-import" title="Import coupons from Excel">
+                        {importing ? <Loader2 size={15} className="spinner" /> : <Upload size={15} />}
+                        {importing ? 'Importing…' : 'Import'}
+                        <input
+                            ref={fileInputRef}
+                            type="file"
+                            accept=".xlsx,.xls"
+                            style={{ display: 'none' }}
+                            onChange={handleImport}
+                        />
+                    </label>
                     <button className="cpn-btn-add" onClick={() => setModal('create')}>
                         <Plus size={16} /> Add Coupon
                     </button>

@@ -79,7 +79,6 @@ export default function CouponModal({ coupon, onClose, onSaved }) {
                 </div>
 
                 <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                    {/* Row 1 */}
                     <div className="cm-row">
                         <div className="form-group">
                             <label className="form-label">Coupon Code *</label>
@@ -98,7 +97,6 @@ export default function CouponModal({ coupon, onClose, onSaved }) {
                         </div>
                     </div>
 
-                    {/* Row 2 */}
                     <div className="cm-row">
                         <div className="form-group">
                             <label className="form-label">
@@ -115,7 +113,6 @@ export default function CouponModal({ coupon, onClose, onSaved }) {
                         </div>
                     </div>
 
-                    {/* Row 3 */}
                     <div className="cm-row">
                         <div className="form-group">
                             <label className="form-label">Max Uses</label>
@@ -129,7 +126,6 @@ export default function CouponModal({ coupon, onClose, onSaved }) {
                         </div>
                     </div>
 
-                    {/* Applicable To */}
                     <div className="form-group">
                         <label className="form-label">Applicable To</label>
                         <div className="cm-check-group">
@@ -147,7 +143,6 @@ export default function CouponModal({ coupon, onClose, onSaved }) {
                         </div>
                     </div>
 
-                    {/* Toggles row */}
                     <div className="cm-toggle-row">
                         <label className="cm-check-label">
                             <input type="checkbox" className="cm-checkbox"
@@ -163,7 +158,6 @@ export default function CouponModal({ coupon, onClose, onSaved }) {
                         </label>
                     </div>
 
-                    {/* Footer */}
                     <div className="cm-footer">
                         <button type="button" className="cm-btn-cancel" onClick={onClose}>Cancel</button>
                         <button type="submit" className="cm-btn-save" disabled={saving}>

@@ -14,7 +14,6 @@ function NavBar({ isAuthenticated, onLogout }) {
     const [menuOpen, setMenuOpen] = useState(false);
     const menuRef = useRef(null);
 
-    // Close menu on outside click
     useEffect(() => {
         const handler = (e) => {
             if (menuRef.current && !menuRef.current.contains(e.target)) {
@@ -25,7 +24,6 @@ function NavBar({ isAuthenticated, onLogout }) {
         return () => document.removeEventListener('mousedown', handler);
     }, []);
 
-    // Close menu on route change
     useEffect(() => { setMenuOpen(false); }, [location.pathname]);
 
     return (
@@ -36,7 +34,6 @@ function NavBar({ isAuthenticated, onLogout }) {
                     COUPONTASK
                 </Link>
 
-                {/* Desktop Links */}
                 <div className="nav-links-premium">
                     <Link to="/" className={location.pathname === '/' ? 'active' : ''}>Home</Link>
                     <Link to="/admin" className={isAdmin ? 'active' : ''}>Admin</Link>
@@ -48,7 +45,6 @@ function NavBar({ isAuthenticated, onLogout }) {
                     )}
                 </div>
 
-                {/* Hamburger button (mobile) */}
                 <button
                     className="hamburger-btn"
                     onClick={() => setMenuOpen(o => !o)}
@@ -58,7 +54,6 @@ function NavBar({ isAuthenticated, onLogout }) {
                 </button>
             </div>
 
-            {/* Mobile Dropdown Menu */}
             {menuOpen && (
                 <div className="mobile-menu-premium">
                     <Link to="/" className={`mobile-link ${location.pathname === '/' ? 'active' : ''}`}>Home</Link>

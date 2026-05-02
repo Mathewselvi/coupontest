@@ -1,73 +1,67 @@
-/* ============================================
-   CSS Variables
-   ============================================ */
+
 :root {
-  /* Brand — vibrant blue/indigo as seen in the image */
+  
   --primary: #5d5fef;
   --primary-hover: #4e50d9;
   --primary-light: #e8ebf9;
   --primary-text: #2b3674;
   
-  /* Functional Colors */
+  
   --success: #05cd99;
   --warning: #ffb547;
   --danger: #ee5d50;
   --info: #4318ff;
 
-  /* Surfaces */
+  
   --bg-dashboard: #f4f7fe;
   --bg-white: #ffffff;
   --sidebar-width: 280px;
   --topbar-height: 80px;
 
-  /* Typography */
+  
   --text-main: #2b3674;
   --text-muted: #a3aed0;
   --text-secondary: #707eae;
 
-  /* Borders & Shadows */
+  
   --border-light: #f1f4f9;
   --shadow-card: 14px 17px 40px 4px rgba(112, 144, 176, 0.08);
   --shadow-sidebar: 0px 4px 14px rgba(0, 0, 0, 0.05);
 
-  /* Radius */
+  
   --radius-xs: 6px;
   --radius-sm: 8px;
   --radius-md: 16px;
   --radius-lg: 20px;
   --radius-xl: 30px;
 
-  /* Font */
+  
   --font: 'Inter', -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
 
-  /* ── Tokens used by component styles ── */
+  
   --bg: #f8fafc;
   --border: #e2e8f0;
   --border-subtle: #f1f5f9;
-  --text-primary: #2b3674;          /* alias for --text-main */
+  --text-primary: #2b3674;          
   --primary-lighter: #eef0fd;
   --primary-border: rgba(93, 95, 239, 0.2);
 
-  /* Elevation */
+  
   --shadow-xs:     0 1px 3px rgba(0, 0, 0, 0.04);
   --shadow-sm:     0 2px 4px rgba(0, 0, 0, 0.06);
   --shadow-md:     0 4px 16px rgba(0, 0, 0, 0.1);
   --shadow-lg:     0 8px 32px rgba(0, 0, 0, 0.15);
   --shadow-purple: 0 8px 20px rgba(93, 95, 239, 0.3);
 
-  /* Accent — green */
+  
   --accent-green:       #05cd99;
   --accent-green-light: #e6faf4;
 
-  /* Accent — orange */
+  
   --accent-orange:       #ffb547;
   --accent-orange-light: #fff8e6;
 }
 
-
-/* ============================================
-   Reset & Base
-   ============================================ */
 *, *::before, *::after {
   margin: 0;
   padding: 0;
@@ -87,9 +81,6 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* ============================================
-   App Layout
-   ============================================ */
 .app-container {
   display: flex;
   flex-direction: column;
@@ -97,9 +88,6 @@ body {
   background: var(--bg-dashboard);
 }
 
-/* ============================================
-   Premium Navbar (Public) - Floating Pill Design
-   ============================================ */
 .navbar-premium {
   position: fixed;
   top: 0.875rem;
@@ -145,7 +133,7 @@ body {
   font-size: 0.95rem;
   font-weight: 800;
   color: var(--text-primary);
-  text-decoration: none !important; /* Remove underline */
+  text-decoration: none !important; 
   letter-spacing: -0.02em;
 }
 
@@ -166,7 +154,7 @@ body {
 .nav-links-premium {
   display: flex;
   align-items: center;
-  gap: 0.5rem; /* Gap between pill items */
+  gap: 0.5rem; 
 }
 
 @media (max-width: 768px) {
@@ -217,9 +205,6 @@ body {
   background: #fee2e2;
 }
 
-/* ============================================
-   Main Content
-   ============================================ */
 .main-content,
 .main-content-full {
   flex: 1;
@@ -237,23 +222,19 @@ body {
   align-items: flex-start;
   width: 100%;
   min-width: 0;
-  padding: 100px 2rem 3rem !important; /* Force 100px buffer to clear navbar */
+  padding: 100px 2rem 3rem !important; 
 }
 
 .main-content-full {
-  padding: 0; /* Restored to zero for admin layout */
+  padding: 0; 
   align-items: stretch;
 }
-
 
 @keyframes slideUp {
   from { opacity: 0; transform: translateY(20px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 
-/* ============================================
-   Admin Layout — Sidebar
-   ============================================ */
 .admin-layout {
   display: flex;
   width: 100%;
@@ -294,7 +275,7 @@ body {
   margin-bottom: 2.5rem;
   text-transform: uppercase;
   letter-spacing: 1px;
-  text-decoration: none !important; /* Remove underline */
+  text-decoration: none !important; 
 }
 
 .sidebar-brand-mark {
@@ -337,7 +318,7 @@ body {
   padding: 0.875rem 1.25rem;
   border: none;
   background: transparent;
-  border-radius: 14px; /* More rounded pill style */
+  border-radius: 14px; 
   color: var(--text-secondary);
   font-size: 0.95rem;
   font-weight: 500;
@@ -358,7 +339,6 @@ body {
   box-shadow: 0 4px 12px rgba(99, 102, 241, 0.25);
 }
 
-
 .sidebar-nav-item svg {
   width: 20px;
   height: 20px;
@@ -369,7 +349,6 @@ body {
   padding-top: 1.5rem;
   border-top: 1px solid var(--border-light);
 }
-
 
 .sidebar-logout {
   display: flex;
@@ -392,9 +371,6 @@ body {
   color: var(--danger);
 }
 
-/* ============================================
-   Main Area & Top Bar
-   ============================================ */
 .admin-main {
   flex: 1;
   display: flex;
@@ -402,7 +378,7 @@ body {
   min-width: 0;
   height: 100vh;
   overflow-y: auto;
-  padding-right: 1rem; /* Space for the floating layout */
+  padding-right: 1rem; 
 }
 
 .top-bar {
@@ -428,8 +404,6 @@ body {
   align-items: center;
   pointer-events: auto;
 }
-
-
 
 .top-bar-right-aligned {
   display: flex;
@@ -606,9 +580,6 @@ body {
   margin-bottom: 2rem;
 }
 
-/* ============================================
-   Dashboard Grid & Responsiveness
-   ============================================ */
 .dashboard-grid {
   display: grid;
   grid-template-columns: repeat(12, 1fr);
@@ -645,9 +616,6 @@ body {
   }
 }
 
-/* ============================================
-   Mobile Sidebar Toggle & Responsive Admin
-   ============================================ */
 .mobile-toggle {
   display: none;
   align-items: center;
@@ -742,7 +710,6 @@ body {
   }
 }
 
-
 @media (max-width: 600px) {
   .top-bar {
     padding: 0 1rem;
@@ -760,9 +727,6 @@ body {
   }
 }
 
-
-
-/* Rating Circles - CSS implementation of overlapping circles */
 .rating-circles {
   position: relative;
   width: 100%;
@@ -771,7 +735,6 @@ body {
   justify-content: center;
   align-items: center;
 }
-
 
 .rating-circle {
   position: relative;
@@ -831,11 +794,6 @@ body {
   opacity: 0.9;
 }
 
-
-
-/* ============================================
-   Chart
-   ============================================ */
 .chart-wrap {
   padding: 0.25rem 0;
 }
@@ -880,9 +838,6 @@ body {
   height: 160px;
 }
 
-/* ============================================
-   Navbar — clean white, no blur
-   ============================================ */
 .navbar {
   display: flex;
   justify-content: space-between;
@@ -908,8 +863,6 @@ body {
   cursor: pointer;
 }
 
-
-/* Desktop nav links */
 .nav-links-desktop {
   display: flex;
   align-items: center;
@@ -946,7 +899,6 @@ body {
   color: #b91c1c !important;
 }
 
-/* Hamburger */
 .hamburger-btn {
   display: none;
   align-items: center;
@@ -969,9 +921,6 @@ body {
   background: var(--primary-lighter);
 }
 
-/* ============================================
-   Premium Mobile Menu Overlay
-   ============================================ */
 .mobile-menu-premium {
   position: fixed;
   top: 5.5rem;
@@ -1027,7 +976,6 @@ body {
   cursor: pointer;
 }
 
-
 @keyframes slideDown {
   from { opacity: 0; transform: translateY(-4px); }
   to   { opacity: 1; transform: translateY(0); }
@@ -1059,13 +1007,6 @@ body {
   padding-top: 0.75rem;
 }
 
-/* ============================================
-   Main Content
-   ============================================ */
-
-/* ============================================
-   Glass Panel → Clean White Card
-   ============================================ */
 .glass-panel {
   background: var(--bg-white);
   border: 1px solid var(--border);
@@ -1075,9 +1016,6 @@ body {
   width: 100%;
 }
 
-/* ============================================
-   Lead Form
-   ============================================ */
 .lead-form-container {
   max-width: 600px;
   animation: slideUp 0.4s ease-out;
@@ -1099,9 +1037,6 @@ body {
   line-height: 1.6;
 }
 
-/* ============================================
-   Form Elements
-   ============================================ */
 .form-group {
   margin-bottom: 1rem;
 }
@@ -1172,9 +1107,6 @@ body {
   line-height: 1.6;
 }
 
-/* ============================================
-   Coupon Section
-   ============================================ */
 .coupon-section {
   background: var(--primary-lighter);
   padding: 1.125rem;
@@ -1235,9 +1167,6 @@ body {
   cursor: not-allowed;
 }
 
-/* ============================================
-   Offers Panel
-   ============================================ */
 .offers-toggle {
   display: inline-flex;
   align-items: center;
@@ -1393,9 +1322,6 @@ body {
   border-color: var(--primary);
 }
 
-/* ============================================
-   Price Summary
-   ============================================ */
 .price-summary {
   margin-top: 0.875rem;
   padding-top: 0.875rem;
@@ -1425,9 +1351,6 @@ body {
   font-weight: 500;
 }
 
-/* ============================================
-   Buttons — solid, no gradients
-   ============================================ */
 .btn-submit {
   width: 100%;
   padding: 0.9375rem 1.5rem;
@@ -1481,9 +1404,6 @@ body {
   background: #fee2e2;
 }
 
-/* ============================================
-   Messages
-   ============================================ */
 .message {
   margin-top: 0.5rem;
   font-size: 0.8125rem;
@@ -1508,9 +1428,6 @@ body {
   border: 1px solid #bbf7d0;
 }
 
-/* ============================================
-   Spinner
-   ============================================ */
 .spinner {
   animation: spin 0.75s linear infinite;
 }
@@ -1520,9 +1437,6 @@ body {
   to   { transform: rotate(360deg); }
 }
 
-/* ============================================
-   Success Screen
-   ============================================ */
 .success-screen {
   text-align: center;
   padding: 3rem 2rem;
@@ -1539,9 +1453,6 @@ body {
   margin: 0 auto 1.5rem;
 }
 
-/* ============================================
-   Admin Login
-   ============================================ */
 .login-container {
   max-width: 360px;
   width: 100%;
@@ -1560,26 +1471,17 @@ body {
   color: var(--primary);
 }
 
-/* ============================================
-   Divider
-   ============================================ */
 .divider {
   height: 1px;
   background: var(--border);
   margin: 1.25rem 0;
 }
 
-/* ============================================
-   Admin Panel
-   ============================================ */
 .admin-panel {
   width: 100%;
   max-width: 1120px;
 }
 
-/* ============================================
-   Admin Page Header
-   ============================================ */
 .admin-page-header {
   display: flex;
   justify-content: space-between;
@@ -1601,9 +1503,6 @@ body {
   margin-top: 0.2rem;
 }
 
-/* ============================================
-   Stats Cards
-   ============================================ */
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -1660,7 +1559,6 @@ body {
   font-weight: 500;
 }
 
-/* Skeleton */
 .skel-line {
   border-radius: 4px;
   background: linear-gradient(90deg, #e4e4e7 25%, #f4f4f5 50%, #e4e4e7 75%);
@@ -1683,9 +1581,6 @@ body {
   border-radius: var(--radius-md);
 }
 
-/* ============================================
-   Admin Tab Bar
-   ============================================ */
 .admin-tab-bar {
   display: flex;
   gap: 0;
@@ -1726,9 +1621,6 @@ body {
   border-top-left-radius: 0;
 }
 
-/* ============================================
-   Filters Bar
-   ============================================ */
 .filters-bar {
   display: flex;
   gap: 0.5rem;
@@ -1824,9 +1716,33 @@ body {
   transition: all 0.2s;
 }
 
-/* ============================================
-   Table
-   ============================================ */
+.btn-export {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.625rem 1rem;
+  background: var(--accent-green-light);
+  border: 1px solid rgba(5, 205, 153, 0.3);
+  color: #059669;
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+  font-weight: 500;
+  font-family: var(--font);
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.btn-export:hover:not(:disabled) {
+  background: #d1fae5;
+  border-color: #059669;
+}
+
+.btn-export:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
 .table-container {
   overflow-x: auto;
   border-radius: var(--radius-md);
@@ -1914,13 +1830,11 @@ body {
   }
 }
 
-
 .sub-text {
   font-size: 0.75rem;
   color: var(--text-muted);
   margin-top: 2px;
 }
-
 
 .lead-row {
   cursor: pointer;
@@ -1931,9 +1845,6 @@ body {
   font-weight: 600;
 }
 
-/* ============================================
-   Delete Confirm Modal
-   ============================================ */
 .del-confirm-box {
   background: var(--bg-white);
   border-radius: var(--radius-xl);
@@ -1953,8 +1864,6 @@ body {
   from { opacity: 0; transform: scale(0.96); }
   to   { opacity: 1; transform: scale(1); }
 }
-
-
 
 .del-confirm-icon {
   width: 48px;
@@ -2073,9 +1982,6 @@ body {
   cursor: not-allowed;
 }
 
-/* ============================================
-   Badges
-   ============================================ */
 .badge {
   display: inline-flex;
   align-items: center;
@@ -2131,9 +2037,6 @@ body {
   color: var(--accent-orange);
 }
 
-/* ============================================
-   Pagination
-   ============================================ */
 .pagination {
   display: flex;
   justify-content: space-between;
@@ -2189,9 +2092,6 @@ body {
   cursor: not-allowed;
 }
 
-/* ============================================
-   Modal
-   ============================================ */
 .modal-overlay {
   position: fixed;
   inset: 0;
@@ -2291,9 +2191,6 @@ body {
   font-weight: 700;
 }
 
-/* ============================================
-   Coupon Modal
-   ============================================ */
 .cm-row {
   display: flex;
   gap: 0.875rem;
@@ -2402,9 +2299,6 @@ body {
   cursor: not-allowed;
 }
 
-/* ============================================
-   Coupon Cards (CouponsTab)
-   ============================================ */
 .cpn-header {
   display: flex;
   justify-content: space-between;
@@ -2472,6 +2366,28 @@ body {
   border-color: var(--primary);
   color: var(--primary);
   background: var(--primary-lighter);
+}
+
+.cpn-btn-import {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.5rem 1rem;
+  background: var(--accent-green-light);
+  border: 1px solid rgba(5, 205, 153, 0.3);
+  color: #059669;
+  border-radius: var(--radius-sm);
+  font-size: 0.875rem;
+  font-weight: 600;
+  font-family: var(--font);
+  cursor: pointer;
+  transition: background 0.15s;
+  white-space: nowrap;
+}
+
+.cpn-btn-import:hover {
+  background: #d1fae5;
+  border-color: #059669;
 }
 
 .cpn-section-label {
@@ -2666,9 +2582,6 @@ body {
   cursor: not-allowed;
 }
 
-/* ============================================
-   View Report Button (StatsCards)
-   ============================================ */
 .view-report-btn {
   display: inline-flex;
   align-items: center;
@@ -2726,9 +2639,6 @@ body {
   margin-bottom: 0.375rem;
 }
 
-/* ============================================
-   Toast Notifications
-   ============================================ */
 .toast-container {
   position: fixed;
   bottom: 1.25rem;
@@ -2791,9 +2701,6 @@ body {
   opacity: 1;
 }
 
-/* ============================================
-   Premium Detail Styles (LeadModal)
-   ============================================ */
 .premium-details-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -2852,9 +2759,6 @@ body {
   word-break: break-word;
 }
 
-/* ============================================
-   Lead Pricing Summary (LeadModal)
-   ============================================ */
 .lead-pricing-wrap {
   margin-top: 1.25rem;
   background: var(--bg);
@@ -2918,9 +2822,6 @@ body {
   color: var(--text-muted);
 }
 
-/* ============================================
-   Responsive — Tablet ≤ 1024px
-   ============================================ */
 @media (max-width: 1024px) {
   .stats-grid {
     grid-template-columns: repeat(2, 1fr);
@@ -2935,9 +2836,6 @@ body {
   }
 }
 
-/* ============================================
-   Responsive — Mobile ≤ 768px
-   ============================================ */
 @media (max-width: 768px) {
   .nav-links-desktop {
     display: none;
@@ -2947,8 +2845,7 @@ body {
     display: flex;
   }
 
-
-  /* Restore padding removed by :has() selector */
+  
   .main-content:has(.admin-layout) {
     padding: 0;
   }
@@ -2958,7 +2855,7 @@ body {
     min-height: unset;
   }
 
-  /* Keep sidebar reachable via the .open toggle — don't display:none it */
+  
   .admin-sidebar {
     visibility: hidden;
   }
@@ -3029,7 +2926,7 @@ body {
     min-width: 130px;
   }
 
-  /* Table: card layout on mobile */
+  
   .table-container {
     border: none;
     border-radius: 0;
@@ -3190,9 +3087,6 @@ body {
   }
 }
 
-/* ============================================
-   Responsive — Small Mobile ≤ 480px
-   ============================================ */
 @media (max-width: 480px) {
   .navbar {
     padding: 0 1rem;
@@ -3207,7 +3101,6 @@ body {
     top: 52px;
   }
 
-
   .glass-panel {
     padding: 1rem;
   }
@@ -3221,7 +3114,7 @@ body {
   .form-input,
   .form-select,
   .form-textarea {
-    font-size: 16px; /* prevents iOS zoom */
+    font-size: 16px; 
     padding: 0.6875rem 0.8125rem;
   }
 
@@ -3306,9 +3199,6 @@ body {
   }
 }
 
-/* ============================================
-   Responsive — Very Small Mobile ≤ 360px
-   ============================================ */
 @media (max-width: 360px) {
   .navbar-premium {
     height: 56px;
@@ -3327,7 +3217,6 @@ body {
   .form-title {
     font-size: 1rem;
   }
-
 
   .stats-grid {
     grid-template-columns: 1fr 1fr;
@@ -3350,7 +3239,7 @@ body {
     font-size: 1.125rem;
   }
 
-  /* Make rating circles smaller on tiny screens */
+  
   .rating-circle {
     width: 80px !important;
     height: 80px !important;
@@ -3371,9 +3260,6 @@ body {
   }
 }
 
-/* ============================================
-   Admin Panel — Top Bar Mobile
-   ============================================ */
 @media (max-width: 768px) {
   .top-bar {
     padding: 0 1rem;
@@ -3381,7 +3267,7 @@ body {
     gap: 0.75rem;
   }
 
-  /* Show the hamburger toggle on all ≤768px */
+  
   .mobile-toggle {
     display: flex;
     align-items: center;
@@ -3409,7 +3295,7 @@ body {
     margin-bottom: 1rem;
   }
 
-  /* Dashboard cards full-width on mobile */
+  
   .col-8, .col-4, .col-6, .col-5, .col-7, .col-12 {
     grid-column: span 12;
   }
@@ -3418,16 +3304,13 @@ body {
     gap: 0.875rem;
   }
 
-  /* Stats row scrolls horizontally on very narrow screens */
+  
   .stats-grid {
     grid-template-columns: repeat(2, 1fr);
     gap: 0.75rem;
   }
 }
 
-/* ============================================
-   Landscape Mobile (phones rotated)
-   ============================================ */
 @media (max-height: 500px) and (orientation: landscape) {
   .navbar-premium {
     height: 50px;
@@ -3440,9 +3323,6 @@ body {
   }
 }
 
-/* ============================================
-   Safe Area Insets (Notched phones — iPhone X+)
-   ============================================ */
 @supports (padding-bottom: env(safe-area-inset-bottom)) {
   .toast-container {
     bottom: calc(1rem + env(safe-area-inset-bottom));
@@ -3459,9 +3339,6 @@ body {
   }
 }
 
-/* ============================================
-   Reduced Motion Accessibility
-   ============================================ */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -3476,11 +3353,8 @@ body {
   }
 }
 
-/* ============================================
-   Form — touch target improvements
-   ============================================ */
 @media (hover: none) and (pointer: coarse) {
-  /* Touch device: bigger tap targets */
+  
   .btn-apply,
   .btn-remove {
     min-height: 44px;

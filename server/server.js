@@ -17,7 +17,6 @@ dotenv.config();
 
 const app = express();
 
-// Trust proxy for Vercel/proxies (needed for rate limiting)
 app.set('trust proxy', 1);
 
 connectDB();

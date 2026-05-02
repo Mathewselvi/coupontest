@@ -22,12 +22,12 @@ const couponSchema = new mongoose.Schema({
         default: 0
     },
     applicableTo: {
-        type: [String], // e.g., ['Service', 'Product', 'Consultation'] or ['All']
+        type: [String],
         default: ['All']
     },
     maxUses: {
         type: Number,
-        default: 100 // Default max usage limit
+        default: 100
     },
     currentUses: {
         type: Number,
